@@ -3,6 +3,7 @@ using Api.Dtos.Dependent;
 using Api.Dtos.Employee;
 using Api.Interfaces;
 using Api.Models;
+using Helper.Response;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -26,90 +27,73 @@ public class DependentsController : ControllerBase
 
     [SwaggerOperation(Summary = "Get dependent by id")]
     [HttpGet("{id}")]
-    [ProducesResponseType(typeof(ApiResponse<GetDependentDto>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<ApiResponse<GetDependentDto>>> Get(int id)
+    [ProducesResponseType(typeof(ServiceResponse<GetDependentDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ServiceResponse<string>), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ServiceResponse<string>), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> Get(int id)
     {
         try
         {
             if (id == 0)
             {
-                return BadRequest("Invalid dependent id.");
+                return CustomServiceResponse_V2.Failure("Invalid dependent id.", StatusCodes.Status400BadRequest);
             }
 
             var dependent = await _dependentsBusinessLayer.GetDependentById(id);
             if (dependent == null)
             {
-                return NotFound("dependent id does not exist.");
+                return CustomServiceResponse_V2.Failure("dependent id does not exist..", StatusCodes.Status404NotFound);
             }
 
-            return new ApiResponse<GetDependentDto>
-            {
-                Data = dependent,
-                Success = true
-            };
+            return CustomServiceResponse_V2.Success<GetDependentDto>(dependent);
         }
 
         catch (Exception ex)
         {
-            //Log the actual error message for troubleshooting. It is not a good idea to show the actual error to the end user. 
-            return new ObjectResult(new string("Unable to process the request."))
-                { StatusCode = StatusCodes.Status500InternalServerError };
+            return CustomServiceResponse_V2.Failure(ex);
         }
     }
 
     [SwaggerOperation(Summary = "Get all dependents")]
     [HttpGet("")]
-    [ProducesResponseType(typeof(ApiResponse<List<GetDependentDto>>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<ApiResponse<List<GetDependentDto>>>> GetAll()
+    [ProducesResponseType(typeof(ServiceResponse<List<GetDependentDto>>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ServiceResponse<string>), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetAll()
     {
         try
         {
-            return new ApiResponse<List<GetDependentDto>>
-            {
-                Data = await _dependentsBusinessLayer.GetDependents(),
-                Success = true
-            };
+            var result = await _dependentsBusinessLayer.GetDependents();
+            return CustomServiceResponse_V2.Success<List<GetDependentDto?>>(result);
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            //Log the actual error message for troubleshooting. It is not a good idea to show the actual error to the end user. 
-            return new ObjectResult(new string("Unable to process the request."))
-                { StatusCode = StatusCodes.Status500InternalServerError };
+            return CustomServiceResponse_V2.Failure(ex);
         }
       
     }
 
     [SwaggerOperation(Summary = "Get all dependents by employee")]
     [HttpGet("ByEmployee/{employeeId}")]
-    [ProducesResponseType(typeof(ApiResponse<List<GetDependentDto>>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<ApiResponse<List<GetDependentDto>>>> GetAll(int employeeId)
+    [ProducesResponseType(typeof(ServiceResponse<List<GetDependentDto>>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ServiceResponse<string>), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ServiceResponse<string>), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetAll(int employeeId)
     {
         try
         {
             if (employeeId == 0)
             {
-                return BadRequest("Invalid employee id.");
+                return CustomServiceResponse_V2.Failure("Invalid employee id.", StatusCodes.Status400BadRequest);
             }
 
             var dependents = await _dependentsBusinessLayer.GetDependentsByEmployeeId(employeeId);
-          
-            return new ApiResponse<List<GetDependentDto>>
-            {
-                Data = dependents,
-                Success = true
-            };
+
+            return CustomServiceResponse_V2.Success<List<GetDependentDto?>>(dependents);
         }
 
         catch (Exception ex)
         {
-            //Log the actual error message for troubleshooting. It is not a good idea to show the actual error to the end user. 
-            return new ObjectResult(new string("Unable to process the request."))
-                { StatusCode = StatusCodes.Status500InternalServerError };
+            return CustomServiceResponse_V2.Failure(ex);
         }
 
 
