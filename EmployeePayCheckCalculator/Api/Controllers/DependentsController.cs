@@ -36,21 +36,21 @@ public class DependentsController : ControllerBase
         {
             if (id == 0)
             {
-                return CustomServiceResponse_V2.Failure("Invalid dependent id.", StatusCodes.Status400BadRequest);
+                return CustomServiceResponse.Failure("Invalid dependent id.", StatusCodes.Status400BadRequest);
             }
 
             var dependent = await _dependentsBusinessLayer.GetDependentById(id);
             if (dependent == null)
             {
-                return CustomServiceResponse_V2.Failure("dependent id does not exist..", StatusCodes.Status404NotFound);
+                return CustomServiceResponse.Failure("dependent id does not exist..", StatusCodes.Status404NotFound);
             }
 
-            return CustomServiceResponse_V2.Success<GetDependentDto>(dependent);
+            return CustomServiceResponse.Success<GetDependentDto>(dependent);
         }
 
         catch (Exception ex)
         {
-            return CustomServiceResponse_V2.Failure(ex);
+            return CustomServiceResponse.Failure(ex);
         }
     }
 
@@ -63,11 +63,11 @@ public class DependentsController : ControllerBase
         try
         {
             var result = await _dependentsBusinessLayer.GetDependents();
-            return CustomServiceResponse_V2.Success<List<GetDependentDto?>>(result);
+            return CustomServiceResponse.Success<List<GetDependentDto?>>(result);
         }
         catch (Exception ex)
         {
-            return CustomServiceResponse_V2.Failure(ex);
+            return CustomServiceResponse.Failure(ex);
         }
       
     }
@@ -83,17 +83,17 @@ public class DependentsController : ControllerBase
         {
             if (employeeId == 0)
             {
-                return CustomServiceResponse_V2.Failure("Invalid employee id.", StatusCodes.Status400BadRequest);
+                return CustomServiceResponse.Failure("Invalid employee id.", StatusCodes.Status400BadRequest);
             }
 
             var dependents = await _dependentsBusinessLayer.GetDependentsByEmployeeId(employeeId);
 
-            return CustomServiceResponse_V2.Success<List<GetDependentDto?>>(dependents);
+            return CustomServiceResponse.Success<List<GetDependentDto?>>(dependents);
         }
 
         catch (Exception ex)
         {
-            return CustomServiceResponse_V2.Failure(ex);
+            return CustomServiceResponse.Failure(ex);
         }
 
 

@@ -1,10 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using System.Net;
-using System.Runtime.Serialization;
-
-
-namespace Helper.Response
+﻿namespace Helper.Response
 {
     public class ServiceResponse<TResponsType>
     {

@@ -6,6 +6,7 @@ using Api.Models;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using Helper.Response;
+using Helper.CorrelationId;
 
 namespace Api.Controllers;
 
@@ -18,10 +19,12 @@ public class EmployeesController : ControllerBase
 {
 
     private readonly IEmployeeBusinessLayer _employeeBusinessLayer;
+    private readonly ICorrelationIdGenerator _correlationIdGenerator;
 
-    public EmployeesController(IEmployeeBusinessLayer employeeBusinessLayer)
+    public EmployeesController(IEmployeeBusinessLayer employeeBusinessLayer, ICorrelationIdGenerator correlationIdGenerator)
     {
         _employeeBusinessLayer = employeeBusinessLayer;
+        _correlationIdGenerator = correlationIdGenerator;
     }
 
 
@@ -31,28 +34,28 @@ public class EmployeesController : ControllerBase
     [ProducesResponseType(typeof(ServiceResponse<string>), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ServiceResponse<string>), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ServiceResponse<string>), StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> Getv2(int id)
+    public async Task<IActionResult> Get(int id)
     {
         try
         {
             if (id == 0)
             {
-                return CustomServiceResponse_V2.Failure("Invalid employee id.",StatusCodes.Status400BadRequest);
+                return CustomServiceResponse.Failure("Invalid employee id.",StatusCodes.Status400BadRequest);
             }
 
             var employee = await _employeeBusinessLayer.GetEmployeeById(id);
             if (employee == null)
             {
-                return CustomServiceResponse_V2.Failure("Employee id does not exist.", StatusCodes.Status404NotFound);
+                return CustomServiceResponse.Failure("Employee id does not exist.", StatusCodes.Status404NotFound);
             }
 
-            return CustomServiceResponse_V2.Success<GetEmployeeDto>(employee);
+            return CustomServiceResponse.Success<GetEmployeeDto>(employee);
 
         }
 
         catch (Exception ex)
         { 
-            return CustomServiceResponse_V2.Failure(ex);
+            return CustomServiceResponse.Failure(ex);
         }
     }
 
@@ -65,12 +68,12 @@ public class EmployeesController : ControllerBase
         try
         {
             var result = await _employeeBusinessLayer.GetEmployees();
-            return CustomServiceResponse_V2.Success<List<GetEmployeeDto?>>(result);
+            return CustomServiceResponse.Success<List<GetEmployeeDto?>>(result);
 
         }
         catch (Exception ex)
         {
-            return CustomServiceResponse_V2.Failure(ex);
+            return CustomServiceResponse.Failure(ex);
         }
 
     }
@@ -87,21 +90,21 @@ public class EmployeesController : ControllerBase
         {
             if (employeeId == 0)
             {
-                return CustomServiceResponse_V2.Failure("Invalid employee id.", StatusCodes.Status400BadRequest);
+                return CustomServiceResponse.Failure("Invalid employee id.", StatusCodes.Status400BadRequest);
             }
             var employeePayCheck = await _employeeBusinessLayer.GetPayCheckByEmployeeId(employeeId);
             if (employeePayCheck == null)
             {
 
-                return CustomServiceResponse_V2.Failure("Employee id does not exist.", StatusCodes.Status404NotFound);
+                return CustomServiceResponse.Failure("Employee id does not exist.", StatusCodes.Status404NotFound);
             }
 
-            return CustomServiceResponse_V2.Success<GetEmployeePaycheckDto>(employeePayCheck);
+            return CustomServiceResponse.Success<GetEmployeePaycheckDto>(employeePayCheck);
         }
 
         catch (Exception ex)
         {
-            return CustomServiceResponse_V2.Failure(ex);
+            return CustomServiceResponse.Failure(ex);
         }
     }
 }

@@ -2,6 +2,7 @@ using Api.BusinessLayer;
 using Api.Interfaces;
 using Api.Models;
 using Api.Repositories;
+using Helper.CorrelationId;
 using Microsoft.OpenApi.Models;
 
 public class Program
@@ -33,6 +34,10 @@ public class Program
                 policy => { policy.WithOrigins("http://localhost:3000", "http://localhost"); });
         });
 
+
+        builder.Services.AddScoped<ICorrelationIdGenerator, CorrelationIdGenerator>();
+
+
         builder.Services.AddSingleton<IEmployeeRepository<Employee>, EmployeeRepository>();
         builder.Services.AddSingleton<IDependentRepository<Dependent>, DependentRepository>();
         builder.Services.AddSingleton<IDataAccessLayer, DataAccessLayer>();
@@ -57,6 +62,8 @@ public class Program
         app.UseAuthorization();
 
         app.MapControllers();
+
+        app.UseMiddleware<CorrelationIdMiddleware>();
 
         app.Run();
     }

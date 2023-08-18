@@ -16,7 +16,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ErrorHelper\Helper.csproj" />
+    <Reference Include="Helper">
+      <HintPath>..\..\..\Helper\Helper\bin\Debug\net6.0\Helper.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>
